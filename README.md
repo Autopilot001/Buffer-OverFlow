@@ -90,12 +90,10 @@ with `mona pattern_create` / `pattern_offset`.
 - [ ] Find a JMP ESP / POP POP RET gadget
 - [ ] Generate and deliver shellcode
 
-## Disclaimer
 
-For educational use only, against intentionally vulnerable software
-(Vulnserver) running in an isolated lab environment that I own and
-control. Do not use against systems you don't have explicit
-authorization to test.
+
+intentionally vulnerable software
+(Vulnserver) running in an isolated lab environment that I own 
 
 ## References
 - Vulnserver: https://github.com/stephenbradshaw/vulnserver
