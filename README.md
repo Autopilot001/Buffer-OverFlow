@@ -12,8 +12,8 @@ because it's built to be broken.
 
 | Machine         | Role                                              | IP               |
 |------------------|----------------------------------------------------|------------------|
-| Windows VM/host  | Runs Vulnserver.exe, Immunity Debugger attached     | 192.168.137.1    |
-| Ubuntu VM        | Runs the Python fuzzer, netcat                      | 192.168.137.x    |
+| Windows VM/host  | Runs Vulnserver.exe, Immunity Debugger attached     | 192.168.155.A   |
+| Ubuntu VM        | Runs the Python fuzzer, netcat                      | 192.168.155.x    |
 
 **Tools used:**
 - [Immunity Debugger](https://www.immunityinc.com/products/debugger/) (Windows)
@@ -27,7 +27,7 @@ because it's built to be broken.
 Used `netcat` from Ubuntu to confirm the Windows target was reachable
 on port 9999 before fuzzing:
 ```bash
-nc -nv 192.168.137.1 9999
+nc -nv 192.168.155.1 9999
 ```
 ![netcat connect](screenshots/02_netcat_connect.png)
 
