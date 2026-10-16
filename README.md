@@ -95,7 +95,3 @@ with `mona pattern_create` / `pattern_offset`.
 intentionally vulnerable software
 (Vulnserver) running in an isolated lab environment that I own 
 
-## References
-- Vulnserver: https://github.com/stephenbradshaw/vulnserver
-- mona.py: https://github.com/corelan/mona
-- Corelan's exploit-writing tutorial series (the original reference for this methodology)
