@@ -75,10 +75,6 @@ I recorded EIP as `7731850C`, which was inside `ntdll`; it had not yet been over
 
 ## What I still needed to do
 
-- I planned to increase the buffer and check EIP.
-- If it kept crashing in `ntdll`, I planned to inspect SEH.
-- After confirming control, I planned to find the exact offset.
-- I still needed to check bad characters and find a jump gadget.
-- I had not written or tested shellcode yet.
+I planned to increase the buffer and check EIP. If it still crashed in `ntdll`, I planned to inspect SEH. After confirming control, I planned to find the offset, check bad characters, and locate a jump gadget. I had not written or tested shellcode yet.
 
 All testing described here took place against Vulnserver in my isolated lab environment.
