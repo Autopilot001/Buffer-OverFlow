@@ -1,97 +1,85 @@
-# Vulnserver Buffer Overflow Exploit Development
+# Vulnserver Buffer Overflow — Fuzzing and Crash Analysis
 
-A walkthrough of developing a remote code execution exploit against
-[Vulnserver](https://github.com/stephenbradshaw/vulnserver) (the `TRUN`
-command) using **Immunity Debugger** on Windows and **Python 3** on Ubuntu.
-
-Vulnserver is a classic, intentionally-vulnerable training target used
-across OSCP-style exploit-development courses — safe to practice on
-because it's built to be broken.
+I used this write-up to keep a record of my Vulnserver practice. I tested the `TRUN` command in an isolated lab, used Immunity Debugger to watch the process, and wrote a small Python fuzzer from Ubuntu. My notes ended at the first crash; I had not yet confirmed control of EIP or completed an exploit.
 
 ## Lab setup
 
-| Machine         | Role                                              | IP               |
-|------------------|----------------------------------------------------|------------------|
-| Windows VM/host  | Runs Vulnserver.exe, Immunity Debugger attached     | 192.168.155.A   |
-| Ubuntu VM        | Runs the Python fuzzer, netcat                      | 192.168.155.x    |
+| Machine | What I used it for |
+| --- | --- |
+| Windows VM | I ran Vulnserver and attached Immunity Debugger. |
+| Ubuntu VM | I ran the Python fuzzer and used netcat. |
 
-**Tools used:**
-- [Immunity Debugger](https://www.immunityinc.com/products/debugger/) (Windows)
-- [Vulnserver](https://github.com/stephenbradshaw/vulnserver) (Windows, target)
-- [mona.py](https://github.com/corelan/mona) (Immunity PyCommands plugin)
-- Python 3 + `netcat` (Ubuntu)
+I kept the target address out of this public write-up and used `TARGET_IP` in the command example.
+
+**Tools I used:**
+- [Immunity Debugger](https://www.immunityinc.com/products/debugger/) on Windows
+- [Vulnserver](https://github.com/stephenbradshaw/vulnserver) as the intentionally vulnerable target
+- [mona.py](https://github.com/corelan/mona) in Immunity Debugger
+- Python 3 and netcat on Ubuntu
 
 ## Progress log
 
-### 1. Confirm connectivity to the target
-Used `netcat` from Ubuntu to confirm the Windows target was reachable
-on port 9999 before fuzzing:
+### 1. Confirmed the target connection
+
+I used netcat from Ubuntu to confirm that my Windows target answered on port 9999 before I began fuzzing. I replaced the address with a placeholder in this example:
+
 ```bash
-nc -nv 192.168.155.1 9999
+nc -nv TARGET_IP 9999
 ```
+
 ![netcat connect](screenshots/02_netcat_connect.png)
 
-Vulnserver's own console confirmed the inbound connection:
+I also checked the Vulnserver console and saw the incoming connection.
+
 ![vulnserver listening](screenshots/03_vulnserver_listening.png)
 
-### 2. Attach Immunity Debugger to Vulnserver
-Opened `vulnserver.exe` in Immunity Debugger (File → Open), ran it with
-F9. Immunity sits paused at the module entry point until the process
-is actually exercised:
+### 2. Attached Immunity Debugger to Vulnserver
+
+I opened `vulnserver.exe` in Immunity Debugger, ran it with F9, and confirmed that the debugger was attached before I sent test input.
+
 ![Immunity attached](screenshots/01_immunity_attached.png)
 
-### 3. Write the fuzzer
-Wrote `exploit/1_fuzzer.py` on the Ubuntu VM in `nano` — sends the
-`TRUN` command to Vulnserver with a buffer of `"A"` characters that
-grows by 100 bytes each iteration until the connection drops:
+### 3. Wrote the fuzzer
+
+I wrote `1_fuzzer.py` in nano on Ubuntu. It sent the `TRUN` command with a buffer of `A` characters, increasing the buffer by 100 bytes after each send until the connection stopped responding.
+
 ![fuzzer script in nano](screenshots/04_fuzzer_script.png)
+
 ![fuzzer.py created](screenshots/05_fuzzer_created.png)
 
-Hit (and fixed) a syntax error on the first run — the shebang line
-(`#!/usr/bin/env python3`) lost its leading `#` during copy/paste:
+On my first run, I hit a syntax error because the shebang line, `#!/usr/bin/env python3`, had lost its leading `#` during copy and paste. I corrected the line before continuing.
+
 ![syntax error](screenshots/07_syntax_error_fixed.png)
 
-### 4. Run the fuzzer
+### 4. Ran the fuzzer
+
+I ran the script with Python 3:
+
 ```bash
 python3 fuzzer.py
 ```
+
 ![running fuzzer](screenshots/06_running_fuzzer.png)
+
 ![fuzzing progress](screenshots/08_fuzzing_progress.png)
 
-Buffer size climbed steadily (100, 200, 300 ... bytes) with each
-successful send printed to the terminal.
+I watched the payload increase from 100 bytes in 100-byte steps as each send completed.
 
-### 5. Crash observed
-Vulnserver stopped responding and Immunity Debugger caught the fault.
-At this point in the run:
+### 5. Observed the crash
+
+Vulnserver stopped responding, and Immunity Debugger showed the resulting crash.
+
 ![crash in Immunity](screenshots/09_crash_eip.png)
 
-- **EIP:** `7731850C` — inside `ntdll`, not a direct overwrite with
-  `41414141` yet
-- **Status bar:** `Terminated`, exit code 1
+I recorded EIP as `7731850C`, which was inside `ntdll`; it had not yet been overwritten with my input (`41414141`). I treated this as an initial crash checkpoint, not as proof that I controlled execution. I still needed to determine whether a larger buffer would reach EIP or whether this crash path involved SEH.
 
-**What this means:** the overflow crashed the process, but the crash
-is currently happening inside a Windows system DLL rather than landing
-directly in EIP with controlled bytes. This is a common checkpoint —
-it usually means either the buffer needs to be larger before it reaches
-EIP directly, or this particular crash path is going through SEH
-instead of a direct return-address overwrite. Both are solvable; this
-is the next thing to run down before moving to the offset-finding stage
-with `mona pattern_create` / `pattern_offset`.
+## What I planned to check next
 
-## Next steps
-- [ ] Re-run with a larger max buffer size and confirm whether EIP
-      lands on a clean `41414141` instead of an `ntdll` address
-- [ ] If it's consistently landing in `ntdll`/SEH, check the SEH chain
-      in Immunity for an overwritten handler
-- [ ] Once EIP (or SEH) control is confirmed, generate a cyclic pattern
-      with `!mona pattern_create 3000` and find the exact offset
-- [ ] Bad character analysis
-- [ ] Find a JMP ESP / POP POP RET gadget
-- [ ] Generate and deliver shellcode
+- [ ] I planned to rerun the fuzzer with a larger maximum buffer and check whether EIP reached a controlled value.
+- [ ] If the crash continued through `ntdll` or SEH, I planned to inspect the SEH chain in Immunity Debugger.
+- [ ] After confirming control of EIP or SEH, I planned to generate a cyclic pattern with `!mona pattern_create 3000` and find the offset.
+- [ ] I still needed to complete bad-character analysis.
+- [ ] I still needed to locate a suitable `JMP ESP` or `POP POP RET` gadget.
+- [ ] I had not yet generated or delivered shellcode.
 
-
-
-intentionally vulnerable software
-(Vulnserver) running in an isolated lab environment that I own 
-
+All testing described here took place against Vulnserver in my isolated lab environment.
