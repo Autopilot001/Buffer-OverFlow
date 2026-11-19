@@ -1,4 +1,4 @@
-# Vulnserver Buffer Overflow — Fuzzing and Crash Analysis
+# Vulnserver Buffer Overflow Fuzzing and Crash Analysis
 
 I used this write-up to keep a record of my Vulnserver practice. I tested the `TRUN` command in an isolated lab, used Immunity Debugger to watch the process, and wrote a small Python fuzzer from Ubuntu. My notes ended at the first crash; I had not yet confirmed control of EIP or completed an exploit.
 
