@@ -73,13 +73,12 @@ Vulnserver stopped responding, and Immunity Debugger showed the resulting crash.
 
 I recorded EIP as `7731850C`, which was inside `ntdll`; it had not yet been overwritten with my input (`41414141`). I treated this as an initial crash checkpoint, not as proof that I controlled execution. I still needed to determine whether a larger buffer would reach EIP or whether this crash path involved SEH.
 
-## What I planned to check next
+## What I still needed to do
 
-- [ ] I planned to rerun the fuzzer with a larger maximum buffer and check whether EIP reached a controlled value.
-- [ ] If the crash continued through `ntdll` or SEH, I planned to inspect the SEH chain in Immunity Debugger.
-- [ ] After confirming control of EIP or SEH, I planned to generate a cyclic pattern with `!mona pattern_create 3000` and find the offset.
-- [ ] I still needed to complete bad-character analysis.
-- [ ] I still needed to locate a suitable `JMP ESP` or `POP POP RET` gadget.
-- [ ] I had not yet generated or delivered shellcode.
+- I planned to increase the buffer and check EIP.
+- If it kept crashing in `ntdll`, I planned to inspect SEH.
+- After confirming control, I planned to find the exact offset.
+- I still needed to check bad characters and find a jump gadget.
+- I had not written or tested shellcode yet.
 
 All testing described here took place against Vulnserver in my isolated lab environment.
