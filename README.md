@@ -12,10 +12,10 @@ I used this write up to keep a record of my Vulnserver practice. I tested the `T
 I kept the target address out of this public write up and used `TARGET_IP` in the command example.
 
 **Tools I used:**
-- [Immunity Debugger](https://www.immunityinc.com/products/debugger/) on Windows
-- [Vulnserver](https://github.com/stephenbradshaw/vulnserver) as the intentionally vulnerable target
-- [mona.py](https://github.com/corelan/mona) in Immunity Debugger
-- Python 3 and netcat on Ubuntu
+ [Immunity Debugger](https://www.immunityinc.com/products/debugger/) on Windows
+ [Vulnserver](https://github.com/stephenbradshaw/vulnserver) as the intentionally vulnerable target
+[mona.py](https://github.com/corelan/mona) in Immunity Debugger
+Python 3 and netcat on Ubuntu
 
 ## Progress log
 
