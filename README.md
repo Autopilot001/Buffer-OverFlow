@@ -1,6 +1,6 @@
 # Vulnserver Buffer Overflow Fuzzing and Crash Analysis
 
-I used this write-up to keep a record of my Vulnserver practice. I tested the `TRUN` command in an isolated lab, used Immunity Debugger to watch the process, and wrote a small Python fuzzer from Ubuntu. My notes ended at the first crash; I had not yet confirmed control of EIP or completed an exploit.
+I used this write up to keep a record of my Vulnserver practice. I tested the `TRUN` command in an isolated lab, used Immunity Debugger to watch the process, and wrote a small Python fuzzer from Ubuntu. My notes ended at the first crash; I had not yet confirmed control of EIP or completed an exploit.
 
 ## Lab setup
 
@@ -9,7 +9,7 @@ I used this write-up to keep a record of my Vulnserver practice. I tested the `T
 | Windows VM | I ran Vulnserver and attached Immunity Debugger. |
 | Ubuntu VM | I ran the Python fuzzer and used netcat. |
 
-I kept the target address out of this public write-up and used `TARGET_IP` in the command example.
+I kept the target address out of this public write up and used `TARGET_IP` in the command example.
 
 **Tools I used:**
 - [Immunity Debugger](https://www.immunityinc.com/products/debugger/) on Windows
